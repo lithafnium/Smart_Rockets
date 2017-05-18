@@ -1,5 +1,7 @@
-int lifeSpan = 400; 
+int lifeSpan = 600; 
 int count = 0; 
+Target t = new Target(300, 50); 
+
 class Target {
   int x, y; 
   Target(int x, int y) {
@@ -15,6 +17,7 @@ class Target {
 class Rocket {
   PVector location, velocity, acceleration; 
   DNA dna = new DNA(); 
+  float fitness; 
   Rocket() {
     location = new PVector(width/2, height); 
     velocity = new PVector(); 
@@ -28,6 +31,12 @@ class Rocket {
     velocity.add(acceleration); 
     location.add(velocity); 
     acceleration.mult(0);
+  }
+  
+  void calcFitness(){
+      float distance = dist(location.x, location.y, t.x, t.y); 
+      
+      fitness = 1 / distance; 
   }
 
   void show() {
@@ -45,6 +54,7 @@ class Rocket {
 class Population {
   int populationSize = 25; 
   Rocket[] rockets = new Rocket[populationSize]; 
+  Rocket[] matingPool; 
   Population() {
     for (int i = 0; i < populationSize; i++) {
       rockets[i] = new Rocket();
@@ -56,6 +66,13 @@ class Population {
       rockets[i].update(); 
       rockets[i].show();
     }
+  }
+  
+  void evaluate(){
+     for(int i = 0; i < populationSize; i++){
+        rockets[i].calcFitness();  
+     }
+     matingPool = new Rocket[]; 
   }
 }
 class DNA {
@@ -70,7 +87,6 @@ class DNA {
 }
 
 
-Target t = new Target(300, 50); 
 Rocket r; 
 Population pop; 
 void setup() {
@@ -89,7 +105,7 @@ void draw() {
   //r.show(); 
   pop.run();
   count++; 
-  if(count == 400){
+  if(count == lifeSpan){
      pop = new Population(); 
      count = 0; 
   }
