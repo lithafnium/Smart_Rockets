@@ -36,7 +36,7 @@ class Rocket {
   void calcFitness(){
       float distance = dist(location.x, location.y, t.x, t.y); 
       
-      fitness = 1 / distance; 
+      fitness = map(distance, 0, width, width, 0); 
   }
 
   void show() {
@@ -54,7 +54,7 @@ class Rocket {
 class Population {
   int populationSize = 25; 
   Rocket[] rockets = new Rocket[populationSize]; 
-  Rocket[] matingPool; 
+  ArrayList<Rocket> matingPool = new ArrayList<Rocket>(); 
   Population() {
     for (int i = 0; i < populationSize; i++) {
       rockets[i] = new Rocket();
@@ -69,10 +69,28 @@ class Population {
   }
   
   void evaluate(){
+    float maxFitness = 0; 
      for(int i = 0; i < populationSize; i++){
         rockets[i].calcFitness();  
+        maxFitness = rockets[i].fitness > maxFitness ? rockets[i].fitness : maxFitness;
+       
      }
-     matingPool = new Rocket[]; 
+     for(int i = 0; i < populationSize; i++){
+        rockets[i].fitness /= maxFitness;  
+     }
+     matingPool = new ArrayList<Rocket>(); 
+     for(int i = 0; i < populationSize; i++){
+         int n = (int)rockets[i].fitness * 100; 
+         for(int i = 0; i < n; i++){
+            matingPool.add(rockets[i]);  
+         }
+      }
+     
+     //matingPool = new Rocket[]; 
+  }
+  void selection(){
+     int parentAIndex = random(0, matingPool.size()); 
+     Rocket parentA = random(matingPool);  
   }
 }
 class DNA {
