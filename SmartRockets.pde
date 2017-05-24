@@ -1,17 +1,20 @@
-int lifeSpan = 600; 
+int lifeSpan = 400; 
 int count = 0; 
 int generation = 0; 
+float mutationRate = 0.01; 
 Target t = new Target(300, 50); 
 
 class Target {
   int x, y; 
+  int radius = 50; 
+  boolean draggable; 
   Target(int x, int y) {
     this.x = x; 
     this.y = y;
   }
   void display() {
     fill(198, 196, 196); 
-    ellipse(x, y, 50, 50);
+    ellipse(x, y, radius, radius);
   }
 }
 
@@ -172,7 +175,7 @@ class DNA {
   }
   void mutation(){
      for(int i = 0; i < genes.length; i++){
-        if(random(1) < 0.01){
+        if(random(1) < mutationRate){
            genes[i] = PVector.random2D();  
            genes[i].setMag(0.1);  
         }
@@ -210,5 +213,27 @@ void draw() {
     count = 0;
     generation++; 
   }
+  if(dist(t.x, t.y, mouseX, mouseY) <= t.radius/2){
+     cursor(HAND);  
+  }
+  
+  else {
+    cursor(ARROW); 
+  }
+  if(t.draggable){
+     t.x = mouseX; 
+     t.y = mouseY; 
+  }
   //println(pop.rockets.length); 
+}
+
+void mouseDragged(){
+  if(dist(t.x, t.y, mouseX, mouseY) <= t.radius/2){
+    t.draggable = true; 
+  }
+    
+}
+
+void mouseReleased(){
+   t.draggable = false;  
 }
