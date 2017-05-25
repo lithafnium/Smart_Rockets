@@ -1,7 +1,8 @@
-int lifeSpan = 400; 
+int lifeSpan = 600; 
 int count = 0; 
 int generation = 0; 
 float mutationRate = 0.01; 
+float mag = 0.2; 
 Target t = new Target(300, 50); 
 Obstacle o = new Obstacle(300, 300, 400, 10); 
 
@@ -59,6 +60,10 @@ class Rocket {
       completed = true; 
       location = new PVector(t.x, t.y);
     }
+    if(location.x >= o.x - o.w/2 && location.x <= o.x + o.w/2 && location.y >= o.y - o.h/2 && location.y <= o.y + o.h/2){
+       dead = true; 
+       location = new PVector(location.x, location.y); 
+    }
     applyForce(dna.genes[count]); 
 
 
@@ -78,6 +83,9 @@ class Rocket {
       if (count < lifeSpan * 0.8) {
         fitness *= 10;
       }
+    }
+    if(dead){
+       fitness /= 10;  
     }
   }
 
@@ -195,7 +203,7 @@ class DNA {
     for (int i = 0; i < genes.length; i++) {
       if (random(1) < mutationRate) {
         genes[i] = PVector.random2D();  
-        genes[i].setMag(0.1);
+        genes[i].setMag(mag);
       }
     }
   }
