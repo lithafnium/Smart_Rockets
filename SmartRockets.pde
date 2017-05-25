@@ -3,6 +3,23 @@ int count = 0;
 int generation = 0; 
 float mutationRate = 0.01; 
 Target t = new Target(300, 50); 
+Obstacle o = new Obstacle(300, 300, 400, 10); 
+
+class Obstacle {
+  int x, y, w, h; 
+  boolean draggable; 
+  Obstacle(int x, int y, int w, int h) {
+    this.x = x; 
+    this.y = y;
+    this.w = w; 
+    this.h = h;
+  }
+
+  void display() {
+    fill(255, 150); 
+    rect(x, y, w, h);
+  }
+}
 
 class Target {
   int x, y; 
@@ -25,24 +42,27 @@ class Rocket {
   int id; 
   DNA dna; 
   float fitness; 
-  boolean completed; 
+  boolean completed = false; 
+  boolean dead = false; 
   Rocket() {
-    dna = new DNA(); 
+    dna = new DNA();
   }
-  Rocket(DNA dna){
-     this.dna = dna;  
+  Rocket(DNA dna) {
+    this.dna = dna;
   }
   void applyForce(PVector force) {
     acceleration.add(force);
   }
   void update() {
     float distance = dist(location.x, location.y, t.x, t.y); 
-    if(distance < 25){
+    if (distance < 25) {
       completed = true; 
-      location = new PVector(t.x, t.y); 
+      location = new PVector(t.x, t.y);
     }
     applyForce(dna.genes[count]); 
-    if(!completed){
+
+
+    if (!completed && !dead) {
       velocity.add(acceleration); 
       location.add(velocity); 
       acceleration.mult(0);
@@ -53,11 +73,11 @@ class Rocket {
     float distance = dist(location.x, location.y, t.x, t.y); 
 
     fitness = map(distance, 0, width, width, 0);
-    if(completed){
-       fitness *= 10;
-       if(count < lifeSpan * 0.8){
-          fitness *= 10;  
-       }
+    if (completed) {
+      fitness *= 10;
+      if (count < lifeSpan * 0.8) {
+        fitness *= 10;
+      }
     }
   }
 
@@ -71,8 +91,8 @@ class Rocket {
     rect(0, 0, 25, 5);
     popMatrix();
   }
-  String toString(){
-     return "Id: " + id + " " + "Location: " + "(" + location.x + ", " + location.y +  ")"; 
+  String toString() {
+    return "Id: " + id + " " + "Location: " + "(" + location.x + ", " + location.y +  ")";
   }
 }
 
@@ -83,13 +103,13 @@ class Population {
   Population() {
     for (int i = 0; i < populationSize; i++) {
       rockets[i] = new Rocket();
-      rockets[i].id = i; 
+      rockets[i].id = i;
     }
   }
 
   void run() {
     for (int i = 0; i < populationSize; i++) {
-    //  println(rockets[i].toString()); 
+      //  println(rockets[i].toString()); 
       rockets[i].update(); 
       rockets[i].show();
     }
@@ -116,41 +136,40 @@ class Population {
     //matingPool = new Rocket[];
   }
   void selection() {
-   // Rocket[] newRockets = new Rocket[rockets.length]; 
+    // Rocket[] newRockets = new Rocket[rockets.length]; 
 
     for (int i = 0; i < rockets.length; i++) {
       int parentAIndex = (int)random(matingPool.size()); 
       int parentBIndex = (int)random(matingPool.size());
-     // println(parentAIndex + " " + parentBIndex); 
+      // println(parentAIndex + " " + parentBIndex); 
       DNA parentA = matingPool.get(parentAIndex).dna; 
       DNA parentB = matingPool.get(parentBIndex).dna; 
 
       PVector[] child = parentA.crossover(parentB);
-      
+
       DNA newDNA = new DNA(child); 
       newDNA.mutation(); 
       int id = rockets[i].id; 
       rockets[i] = new Rocket(newDNA); 
-     // rockets[i].dna.genes = child; 
+      // rockets[i].dna.genes = child; 
       rockets[i].id = id; 
       //newRockets[i].id = rockets[i].id; 
-      //println("New Rocket: " + newRockets[i].toString()); 
-
+      //println("New Rocket: " + newRockets[i].toString());
     }
-   // rockets = newRockets; 
+    // rockets = newRockets;
   }
 }
 class DNA {
   PVector[] genes = new PVector[lifeSpan]; 
   DNA() {
-    
+
     for (int i = 0; i < lifeSpan; i++) {
       genes[i] = PVector.random2D();
       genes[i].setMag(0.1);
     }
   }
   DNA(PVector[] genes) {
-    
+
     this.genes = genes;
   }
 
@@ -158,28 +177,27 @@ class DNA {
     //DNA newdna = new DNA(); 
     PVector[] newdna = new PVector[lifeSpan]; 
     int mid = (int)(random(genes.length)); 
-   // println(mid); 
+    // println(mid); 
     //println("=============");
     for (int i = 0; i < genes.length; i++) {
       if (i > mid) {
         // println(true); 
         newdna[i] = this.genes[i];
       } else {
-       // println(false);
+        // println(false);
         newdna[i] = partner.genes[i];
       }
-      
     }
     //println("==========="); 
     return newdna;
   }
-  void mutation(){
-     for(int i = 0; i < genes.length; i++){
-        if(random(1) < mutationRate){
-           genes[i] = PVector.random2D();  
-           genes[i].setMag(0.1);  
-        }
-     }
+  void mutation() {
+    for (int i = 0; i < genes.length; i++) {
+      if (random(1) < mutationRate) {
+        genes[i] = PVector.random2D();  
+        genes[i].setMag(0.1);
+      }
+    }
   }
 }
 
@@ -195,8 +213,9 @@ void setup() {
 
 
 void draw() {
-
+  rectMode(CENTER); 
   background(0); 
+  o.display(); 
   t.display(); 
   //r.update(); 
   //r.show(); 
@@ -211,29 +230,45 @@ void draw() {
     pop.evaluate(); 
     pop.selection(); 
     count = 0;
-    generation++; 
+    generation++;
   }
-  if(dist(t.x, t.y, mouseX, mouseY) <= t.radius/2){
-     cursor(HAND);  
+  if ((dist(t.x, t.y, mouseX, mouseY) <= t.radius/2) || (mouseX >= o.x - o.w/2 && mouseX <= o.x + o.w/2 && mouseY >= o.y - o.h/2 && mouseY <= o.y + o.h/2) ) {
+    cursor(HAND);
+  } else {
+    cursor(ARROW);
   }
-  
-  else {
-    cursor(ARROW); 
-  }
-  if(t.draggable){
-     t.x = mouseX; 
-     t.y = mouseY; 
-  }
-  //println(pop.rockets.length); 
-}
 
-void mouseDragged(){
-  if(dist(t.x, t.y, mouseX, mouseY) <= t.radius/2){
-    t.draggable = true; 
-  }
+  //if (mouseX >= o.x - o.w/2 && mouseX <= o.x + o.w/2 && mouseY >= o.y - o.h/2 && mouseY <= o.y + o.h/2) {
     
+  //  println("box"); 
+  //  cursor(HAND); 
+  //} 
+  //else{
+  //   cursor(ARROW);  
+  //}
+  
+  if (t.draggable) {
+    t.x = mouseX; 
+    t.y = mouseY;
+  }
+  if(o.draggable){
+     o.x = mouseX; 
+     o.y = mouseY; 
+  }
+  //println(pop.rockets.length);
 }
 
-void mouseReleased(){
-   t.draggable = false;  
+void mouseDragged() {
+  if (dist(t.x, t.y, mouseX, mouseY) <= t.radius/2) {
+    t.draggable = true;
+  }
+  if (mouseX >= o.x - o.w/2 && mouseX <= o.x + o.w/2 && mouseY >= o.y - o.h/2 && mouseY <= o.y + o.h/2) {
+    
+    o.draggable = true;
+  }
+}
+
+void mouseReleased() {
+  t.draggable = false;
+  o.draggable = false; 
 }
