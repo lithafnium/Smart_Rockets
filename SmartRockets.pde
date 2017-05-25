@@ -246,15 +246,6 @@ void draw() {
     cursor(ARROW);
   }
 
-  //if (mouseX >= o.x - o.w/2 && mouseX <= o.x + o.w/2 && mouseY >= o.y - o.h/2 && mouseY <= o.y + o.h/2) {
-    
-  //  println("box"); 
-  //  cursor(HAND); 
-  //} 
-  //else{
-  //   cursor(ARROW);  
-  //}
-  
   if (t.draggable) {
     t.x = mouseX; 
     t.y = mouseY;
