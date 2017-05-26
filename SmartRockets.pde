@@ -5,7 +5,8 @@ float mutationRate = 0.01;
 float mag = 0.2; 
 Target t = new Target(300, 50); 
 Obstacle o = new Obstacle(300, 300, 400, 10); 
-
+Rocket r; 
+Population pop; 
 class Obstacle {
   int x, y, w, h; 
   boolean draggable; 
@@ -210,8 +211,7 @@ class DNA {
 }
 
 
-Rocket r; 
-Population pop; 
+
 void setup() {
   size(600, 600); 
   background(0); 
