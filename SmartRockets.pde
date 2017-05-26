@@ -7,6 +7,7 @@ Target t = new Target(300, 50);
 Obstacle o = new Obstacle(300, 300, 400, 10); 
 Rocket r; 
 Population pop; 
+
 class Obstacle {
   int x, y, w, h; 
   boolean draggable; 
@@ -32,8 +33,18 @@ class Target {
     this.y = y;
   }
   void display() {
-    fill(198, 196, 196); 
+    fill(255, 0, 0); 
     ellipse(x, y, radius, radius);
+    fill(255); 
+    ellipse(x, y, radius - 10, radius - 10);
+    
+    fill(255, 0, 0); 
+    ellipse(x, y, radius - 20, radius - 20);
+    
+    fill(255); 
+    ellipse(x, y, radius - 30, radius - 30);
+    fill(255 , 0, 0); 
+    ellipse(x, y, radius - 40, radius - 40);
   }
 }
 
@@ -86,7 +97,7 @@ class Rocket {
       }
     }
     if(dead){
-       fitness /= 10;  
+       fitness /= 100;  
     }
   }
 
@@ -213,7 +224,7 @@ class DNA {
 
 
 void setup() {
-  size(600, 600); 
+  size(800, 600); 
   background(0); 
   r = new Rocket(); 
   pop = new Population();
