@@ -1,8 +1,14 @@
+import controlP5.*; 
+
 int lifeSpan = 600; 
 int count = 0; 
 int generation = 0; 
 float mutationRate = 0.01; 
 float mag = 0.2; 
+float red = 255;
+float blue = 255; 
+float green = 255; 
+float alpha = 150; 
 Target t = new Target(300, 50); 
 Obstacle o = new Obstacle(300, 300, 400, 10); 
 Rocket r; 
@@ -74,6 +80,7 @@ class Rocket {
     }
     if(location.x >= o.x - o.w/2 && location.x <= o.x + o.w/2 && location.y >= o.y - o.h/2 && location.y <= o.y + o.h/2){
        dead = true; 
+       
        location = new PVector(location.x, location.y); 
     }
     applyForce(dna.genes[count]); 
@@ -97,6 +104,7 @@ class Rocket {
       }
     }
     if(dead){
+      
        fitness /= 100;  
     }
   }
@@ -104,7 +112,23 @@ class Rocket {
   void show() {
     pushMatrix(); 
     noStroke(); 
-    fill(255, 150); 
+    if(dead){
+      red = 255; 
+       green = 0; 
+       blue = 0;  
+    }
+    else if(completed){
+      red = 0; 
+      blue = 0; 
+      green = 255; 
+    }
+    else {
+       red = 255; 
+       green = 255; 
+       blue = 255; 
+    }
+    fill(red, green, blue, alpha); 
+    
     translate(location.x, location.y); 
     rotate(velocity.heading()); 
     rectMode(CENTER); 
