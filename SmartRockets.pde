@@ -1,14 +1,22 @@
 import controlP5.*; 
 
-int lifeSpan = 600; 
+ControlP5 cp5;
+
+
+int lifeSpan = 600;
+int newLifeSpan = 600; 
 int count = 0; 
 int generation = 0; 
-float mutationRate = 0.01; 
+float mutationRate = 0.01;
+float newMutationRate = 0.01;
 float mag = 0.2; 
+float newMag = 0.2;
 float red = 255;
 float blue = 255; 
 float green = 255; 
 float alpha = 150; 
+int populationSize = 25; 
+int newPop = 0; 
 Target t = new Target(300, 50); 
 Obstacle o = new Obstacle(300, 300, 400, 10); 
 Rocket r; 
@@ -141,7 +149,7 @@ class Rocket {
 }
 
 class Population {
-  int populationSize = 25; 
+  //int populationSize = population; 
   Rocket[] rockets = new Rocket[populationSize]; 
   ArrayList<Rocket> matingPool = new ArrayList<Rocket>(); 
   Population() {
@@ -209,7 +217,7 @@ class DNA {
 
     for (int i = 0; i < lifeSpan; i++) {
       genes[i] = PVector.random2D();
-      genes[i].setMag(0.1);
+      genes[i].setMag(mag);
     }
   }
   DNA(PVector[] genes) {
@@ -252,6 +260,38 @@ void setup() {
   background(0); 
   r = new Rocket(); 
   pop = new Population();
+  
+   cp5 = new ControlP5(this); 
+   //Button reset = new Button(); 
+   //reset.setPosition(50, 100); 
+   
+   cp5.addSlider("Population")
+     .setPosition(50, 80)
+     .setRange(0, 200)
+     .setValue(25);
+     ;
+   cp5.addSlider("Mutation_Rate")
+     .setPosition(50, 95)
+     .setRange(0, 1)
+     .setValue(0.01);
+     ;
+     
+   cp5.addSlider("Speed")
+     .setPosition(50, 110)
+     .setRange(0, 1)
+     .setValue(0.2);
+     ;
+     
+   cp5.addSlider("Time")
+     .setPosition(50, 125)
+     .setRange(0, 2000)
+     .setValue(600);
+     ;
+     
+   cp5.addButton("Reset")
+      .setValue(128)
+     .setPosition(50,140)
+     ;
 }
 
 
@@ -290,6 +330,33 @@ void draw() {
      o.y = mouseY; 
   }
   //println(pop.rockets.length);
+}
+
+void Population(int popu){
+  newPop = popu; 
+  
+}
+
+void Mutation_Rate(float rate){
+    newMutationRate = rate;
+}
+void Speed(float magnitude){
+   newMag = magnitude; 
+}
+void Time(int time){
+  newLifeSpan = time; 
+}
+void Reset(){
+  println("test"); 
+    populationSize = newPop; 
+    mag = newMag;
+    mutationRate = newMutationRate;
+    lifeSpan = newLifeSpan; 
+  pop = new Population(); 
+  count = 0; 
+  generation = 0; 
+  
+  
 }
 
 void mouseDragged() {
