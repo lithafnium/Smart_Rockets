@@ -17,6 +17,8 @@ float green = 255;
 float alpha = 150; 
 int populationSize = 25; 
 int newPop = 0; 
+ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>(); 
+
 Target t = new Target(300, 50); 
 Obstacle o = new Obstacle(300, 300, 400, 10); 
 Rocket r; 
@@ -260,6 +262,7 @@ void setup() {
   background(0); 
   r = new Rocket(); 
   pop = new Population();
+  obstacles.add(o); 
   
    cp5 = new ControlP5(this); 
    //Button reset = new Button(); 
@@ -287,10 +290,12 @@ void setup() {
      .setRange(0, 2000)
      .setValue(600);
      ;
-     
+   cp5.addButton("Add_Obstacle")
+     .setValue(128)
+      .setPosition(50, 140); 
    cp5.addButton("Reset")
       .setValue(128)
-     .setPosition(50,140)
+     .setPosition(50,165)
      ;
 }
 
@@ -298,7 +303,11 @@ void setup() {
 void draw() {
   rectMode(CENTER); 
   background(0); 
-  o.display(); 
+  for(int i = 0; i < obstacles.size(); i++){
+     Obstacle obs = obstacles.get(i); 
+     obs.display(); 
+  }
+  
   t.display(); 
   //r.update(); 
   //r.show(); 
@@ -346,6 +355,10 @@ void Speed(float magnitude){
 void Time(int time){
   newLifeSpan = time; 
 }
+//void Add_Obstacle(){
+//   Obstacle obstacle = new Obstacle(mouseX, mouseY, 400, 10);  
+//   obstacles.add(obstacle); 
+//}
 void Reset(){
   println("test"); 
     populationSize = newPop; 
