@@ -1,8 +1,10 @@
 import controlP5.*; 
+import java.util.Deque; 
+import java.util.LinkedList; 
 
 ControlP5 cp5;
 
-
+Deque<Obstacle> deque = new LinkedList<Obstacle>(); 
 int lifeSpan = 600;
 int newLifeSpan = 600; 
 int count = 0; 
@@ -53,13 +55,13 @@ class Target {
     ellipse(x, y, radius, radius);
     fill(255); 
     ellipse(x, y, radius - 10, radius - 10);
-    
+
     fill(255, 0, 0); 
     ellipse(x, y, radius - 20, radius - 20);
-    
+
     fill(255); 
     ellipse(x, y, radius - 30, radius - 30);
-    fill(255 , 0, 0); 
+    fill(255, 0, 0); 
     ellipse(x, y, radius - 40, radius - 40);
   }
 }
@@ -88,10 +90,13 @@ class Rocket {
       completed = true; 
       location = new PVector(t.x, t.y);
     }
-    if(location.x >= o.x - o.w/2 && location.x <= o.x + o.w/2 && location.y >= o.y - o.h/2 && location.y <= o.y + o.h/2){
-       dead = true; 
-       
-       location = new PVector(location.x, location.y); 
+    for (int i = 0; i < obstacles.size(); i++) {
+      Obstacle obs = obstacles.get(i); 
+      if (location.x >= obs.x - obs.w/2 && location.x <= obs.x + obs.w/2 && location.y >= obs.y - obs.h/2 && location.y <= obs.y + obs.h/2) {
+        dead = true; 
+
+        location = new PVector(location.x, location.y);
+      }
     }
     applyForce(dna.genes[count]); 
 
@@ -113,32 +118,30 @@ class Rocket {
         fitness *= 10;
       }
     }
-    if(dead){
-      
-       fitness /= 100;  
+    if (dead) {
+
+      fitness /= 100;
     }
   }
 
   void show() {
     pushMatrix(); 
     noStroke(); 
-    if(dead){
+    if (dead) {
       red = 255; 
-       green = 0; 
-       blue = 0;  
-    }
-    else if(completed){
+      green = 0; 
+      blue = 0;
+    } else if (completed) {
       red = 0; 
       blue = 0; 
+      green = 255;
+    } else {
+      red = 255; 
       green = 255; 
-    }
-    else {
-       red = 255; 
-       green = 255; 
-       blue = 255; 
+      blue = 255;
     }
     fill(red, green, blue, alpha); 
-    
+
     translate(location.x, location.y); 
     rotate(velocity.heading()); 
     rectMode(CENTER); 
@@ -263,51 +266,51 @@ void setup() {
   r = new Rocket(); 
   pop = new Population();
   obstacles.add(o); 
-  
-   cp5 = new ControlP5(this); 
-   //Button reset = new Button(); 
-   //reset.setPosition(50, 100); 
-   
-   cp5.addSlider("Population")
-     .setPosition(50, 80)
-     .setRange(0, 200)
-     .setValue(25);
-     ;
-   cp5.addSlider("Mutation_Rate")
-     .setPosition(50, 95)
-     .setRange(0, 1)
-     .setValue(0.01);
-     ;
-     
-   cp5.addSlider("Speed")
-     .setPosition(50, 110)
-     .setRange(0, 1)
-     .setValue(0.2);
-     ;
-     
-   cp5.addSlider("Time")
-     .setPosition(50, 125)
-     .setRange(0, 2000)
-     .setValue(600);
-     ;
-   cp5.addButton("Add_Obstacle")
-     .setValue(128)
-      .setPosition(50, 140); 
-   cp5.addButton("Reset")
-      .setValue(128)
-     .setPosition(50,165)
-     ;
+
+  cp5 = new ControlP5(this); 
+  //Button reset = new Button(); 
+  //reset.setPosition(50, 100); 
+
+  cp5.addSlider("Population")
+    .setPosition(50, 80)
+    .setRange(0, 200)
+    .setValue(25);
+  ;
+  cp5.addSlider("Mutation_Rate")
+    .setPosition(50, 95)
+    .setRange(0, 1)
+    .setValue(0.01);
+  ;
+
+  cp5.addSlider("Speed")
+    .setPosition(50, 110)
+    .setRange(0, 1)
+    .setValue(0.2);
+  ;
+
+  cp5.addSlider("Time")
+    .setPosition(50, 125)
+    .setRange(0, 2000)
+    .setValue(600);
+  ;
+  cp5.addButton("Add_Obstacle")
+    .setValue(128)
+    .setPosition(50, 140); 
+  cp5.addButton("Reset")
+    .setValue(128)
+    .setPosition(50, 165)
+    ;
 }
 
 
 void draw() {
   rectMode(CENTER); 
   background(0); 
-  for(int i = 0; i < obstacles.size(); i++){
-     Obstacle obs = obstacles.get(i); 
-     obs.display(); 
+  for (int i = 0; i < obstacles.size(); i++) {
+    Obstacle obs = obstacles.get(i); 
+    obs.display();
   }
-  
+
   t.display(); 
   //r.update(); 
   //r.show(); 
@@ -324,65 +327,78 @@ void draw() {
     count = 0;
     generation++;
   }
-  if ((dist(t.x, t.y, mouseX, mouseY) <= t.radius/2) || (mouseX >= o.x - o.w/2 && mouseX <= o.x + o.w/2 && mouseY >= o.y - o.h/2 && mouseY <= o.y + o.h/2) ) {
-    cursor(HAND);
-  } else {
-    cursor(ARROW);
+  for (int i = 0; i < obstacles.size(); i++) {
+    Obstacle obs = obstacles.get(i); 
+    if ((dist(t.x, t.y, mouseX, mouseY) <= t.radius/2) || (mouseX >= obs.x - obs.w/2 && mouseX <= obs.x + obs.w/2 && mouseY >= obs.y - obs.h/2 && mouseY <= obs.y + obs.h/2) ) {
+      cursor(HAND);
+    } else {
+      cursor(ARROW);
+    }
   }
+
 
   if (t.draggable) {
     t.x = mouseX; 
     t.y = mouseY;
   }
-  if(o.draggable){
-     o.x = mouseX; 
-     o.y = mouseY; 
+  for (int i = 0; i < obstacles.size(); i++) {
+    Obstacle obs = obstacles.get(i); 
+    if (obs.draggable) {
+      obs.x = mouseX; 
+      obs.y = mouseY;
+    }
   }
   //println(pop.rockets.length);
 }
 
-void Population(int popu){
-  newPop = popu; 
-  
+void Population(int popu) {
+  newPop = popu;
 }
 
-void Mutation_Rate(float rate){
-    newMutationRate = rate;
+void Mutation_Rate(float rate) {
+  newMutationRate = rate;
 }
-void Speed(float magnitude){
-   newMag = magnitude; 
+void Speed(float magnitude) {
+  newMag = magnitude;
 }
-void Time(int time){
-  newLifeSpan = time; 
+void Time(int time) {
+  newLifeSpan = time;
 }
-//void Add_Obstacle(){
-//   Obstacle obstacle = new Obstacle(mouseX, mouseY, 400, 10);  
-//   obstacles.add(obstacle); 
-//}
-void Reset(){
+void Add_Obstacle() {
+  Obstacle obstacle = new Obstacle(mouseX, mouseY, 400, 10);  
+  obstacles.add(obstacle);
+}
+void Reset() {
   println("test"); 
-    populationSize = newPop; 
-    mag = newMag;
-    mutationRate = newMutationRate;
-    lifeSpan = newLifeSpan; 
+  populationSize = newPop; 
+  mag = newMag;
+  mutationRate = newMutationRate;
+  lifeSpan = newLifeSpan; 
   pop = new Population(); 
   count = 0; 
-  generation = 0; 
-  
-  
+  generation = 0;
 }
 
 void mouseDragged() {
   if (dist(t.x, t.y, mouseX, mouseY) <= t.radius/2) {
     t.draggable = true;
   }
-  if (mouseX >= o.x - o.w/2 && mouseX <= o.x + o.w/2 && mouseY >= o.y - o.h/2 && mouseY <= o.y + o.h/2) {
-    
-    o.draggable = true;
+  for (int i = 0; i < obstacles.size(); i++) {
+    Obstacle obs = obstacles.get(i); 
+    if (mouseX >= obs.x - obs.w/2 && mouseX <= obs.x + obs.w/2 && mouseY >= obs.y - obs.h/2 && mouseY <= obs.y + obs.h/2) {
+
+      obs.draggable = true;
+    }
   }
 }
 
 void mouseReleased() {
   t.draggable = false;
-  o.draggable = false; 
+  for (int i = 0; i < obstacles.size(); i++) {
+    Obstacle obs = obstacles.get(i); 
+    if (mouseX >= obs.x - obs.w/2 && mouseX <= obs.x + obs.w/2 && mouseY >= obs.y - obs.h/2 && mouseY <= obs.y + obs.h/2) {
+
+      obs.draggable = false;
+    }
+  }
 }
