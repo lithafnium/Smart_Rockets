@@ -67,7 +67,7 @@ class Target {
 }
 
 class Rocket {
-  PVector location = new PVector(width/2, height);  
+  PVector location = new PVector(width/2, height - 50);  
   PVector velocity = new PVector(); 
   PVector acceleration = new PVector();  
   int id; 
@@ -97,6 +97,10 @@ class Rocket {
 
         location = new PVector(location.x, location.y);
       }
+    }
+    if(location.x < 0 || location.x > width || location.y > height || location.y < 0){
+       dead = true; 
+       location = new PVector(location.x, location.y); 
     }
     applyForce(dna.genes[count]); 
 
