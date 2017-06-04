@@ -379,6 +379,7 @@ void Reset() {
   mutationRate = newMutationRate;
   lifeSpan = newLifeSpan; 
   pop = new Population(); 
+  obstacles = new ArrayList<Obstacle>(); 
   count = 0; 
   generation = 0;
 }
